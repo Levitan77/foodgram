@@ -23,7 +23,7 @@ services:
     image: nginx:1.25.4-alpine
     env_file: .env
     ports:
-      - 80:80
+      - 8000:80
     depends_on:
       - backend
       - frontend
