@@ -14,6 +14,8 @@ class Command(BaseCommand):
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 ingredients_data = json.load(file)
+                old_ingredients = Ingredient.objects.all()
+                old_ingredients.delete()
                 ingredients = [
                     Ingredient(
                         name=item['name'],
