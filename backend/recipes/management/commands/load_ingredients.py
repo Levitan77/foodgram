@@ -9,7 +9,7 @@ from recipes.models import Ingredient
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-        file_path = os.path.join(settings.BASE_DIR, 'data/ingredients.json')
+        file_path = 'data/ingredients.json'
 
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
