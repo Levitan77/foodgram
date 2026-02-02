@@ -1,36 +1,23 @@
-from django.db.models import Count, Exists, OuterRef
+from django.contrib.auth import get_user_model
+from django.db.models import F, Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from django.http import HttpResponse
-from django.db.models import F, Sum
-from django.urls import reverse
-from rest_framework.pagination import PageNumberPagination
 from djoser.views import UserViewSet as DjoserUserViewSet
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .serializers import (
-    CustomUserSerializer,
-    CustomUserCreateSerializer,
-    AvatarSerializer
-)
-
-from .pagination import CustomPageNumberPagination
-from .serializers import (RecipeCreateSerializer, RecipeSerializer,
-                          RecipeIngredientSerializer,
-                          RecipeIngredientCreateSerializer,
-                          TagSerializer, IngredientSerializer,
-                          RecipeShortSerializer, FavoriteSerializer,
-                          ShoppingCartSerializer, SubscriptionSerializer,
-                          SubscriptionRecipesSerializer)
-from users.models import CustomUser
-from recipes.models import (Tag, Recipe, Ingredient, Favorite,
-                            ShoppingCart, RecipeIngredient)
 from .filters import IngredientFilter, RecipeFilter
+from .pagination import CustomPageNumberPagination
 from .permissions import IsAuthorPermission
-from django.contrib.auth import get_user_model
-
+from .serializers import (AvatarSerializer, CustomUserSerializer,
+                          FavoriteSerializer, IngredientSerializer,
+                          RecipeCreateSerializer, RecipeSerializer,
+                          RecipeShortSerializer, ShoppingCartSerializer,
+                          SubscriptionRecipesSerializer,
+                          SubscriptionSerializer, TagSerializer)
 
 User = get_user_model()
 
@@ -109,16 +96,13 @@ class UserViewSet(DjoserUserViewSet):
     )
     def subscriptions(self, request):
         user = request.user
-        authors = User.objects.filter(subscribers__user=request.user)
+        authors = User.objects.filter(subscribers__user=user)
 
         page = self.paginate_queryset(authors)
-        # if page is not None:
         serializer = SubscriptionRecipesSerializer(
             page, many=True, context={'request': request}
         )
         return self.get_paginated_response(serializer.data)
-        # serializer = SubscriptionRecipesSerializer(authors, many=True)
-        # return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

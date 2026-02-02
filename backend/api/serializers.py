@@ -1,18 +1,14 @@
 import base64
-import datetime as dt
+
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
-
-from djoser.serializers import (
-    UserSerializer,
-    UserCreateSerializer as DjoserUserCreateSerializer,
-)
+from djoser.serializers import \
+    UserCreateSerializer as DjoserUserCreateSerializer
+from djoser.serializers import UserSerializer
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag)
 from rest_framework import serializers
-
-from recipes.models import (Tag, Recipe, Ingredient,
-                            RecipeIngredient, Favorite, ShoppingCart)
 from users.models import Subscription
-
 
 User = get_user_model()
 
