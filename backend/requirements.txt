@@ -2,11 +2,9 @@ Django==3.2.3
 django-filter==21.1
 djangorestframework==3.12.4
 djangorestframework_simplejwt==4.8.0
-djoser==2.3.3
+djoser==2.1.0
 pillow==9.0.0
-pytest-django==4.4.0
 psycopg2-binary==2.9.11
-PyJWT==2.10.1
+PyJWT==2.1.0
 python-dotenv==1.0.1
 pytest-pythonpath==0.7.3
-PyYAML==6.0
