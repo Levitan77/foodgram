@@ -16,10 +16,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Favorite',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')),
-                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='in_favorites', to='recipes.recipe', verbose_name='Избранные рецепты')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='favorites', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(
+                    auto_now_add=True, verbose_name='Дата добавления')),
+                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='favorites', to='recipes.recipe', verbose_name='Избранные рецепты')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='favorites', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
             ],
             options={
                 'verbose_name': 'Избранный рецепт',
@@ -30,10 +34,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ShoppingCart',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')),
-                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='in_shoppingcart', to='recipes.recipe', verbose_name='Рецепт в корзине')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='shoppingcart', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(
+                    auto_now_add=True, verbose_name='Дата добавления')),
+                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='shoppingcarts', to='recipes.recipe', verbose_name='Рецепт в корзине')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='shoppingcarts', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
             ],
             options={
                 'verbose_name': 'Рецепт в корзине',

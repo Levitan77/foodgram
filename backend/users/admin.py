@@ -1,8 +1,14 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import CustomUser
+from .models import User
 
 
-@admin.register(CustomUser)
-class CustomUserAdmin(admin.ModelAdmin):
-    pass
+@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    list_display = ('username', 'email', 'first_name',
+                    'last_name', 'id',)
+    search_fields = ('username', 'email')
+    fieldsets = BaseUserAdmin.fieldsets + (
+        ('Аватарка', {'fields': ('avatar',)}),
+    )

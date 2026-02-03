@@ -8,6 +8,8 @@
 
 Проект состоит из четырех docker контейнеров: бэкенд, фронтенд, база данных, nginx
 
+Работающий проект можно исследовать [тут](https://foodgram2026.ddns.net)
+
 ### Основной функционал
 
 - Пользователи с возможностью авторизации
@@ -56,12 +58,16 @@ ALLOWED_HOSTS=localhost 127.0.0.1 или любой другой список х
 docker compose -f docker-compose.production.yml up -d
 ```
 
-### 4. Выполните миграции и сбор статики в контейнерах
+### 4. Выполните миграции и сбор статики в контейнерах, загрузка ингредиентов
 ```bash
 sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
 sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
 sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
+sudo docker compose -f docker-compose.production.yml exec backend python manage.py load_ingredients
 ```
+
+### 5. Информация
+Документацию Api можно посмотреть по адресу http://127.0.0.1/api/docs
 
 ## Разработка
 

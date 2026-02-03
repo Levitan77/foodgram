@@ -6,21 +6,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 DEBUG = os.getenv('DEBUG', 'false').lower() != 'false'
+DEBUG_DATABASE = os.getenv('DEBUG', 'false').lower() != 'false'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -34,8 +29,8 @@ INSTALLED_APPS = [
     'django_filters',
     'djoser',
     'users',
-    'api',
     'recipes',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -68,10 +63,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-if DEBUG:
+if DEBUG_DATABASE:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -81,8 +73,6 @@ if DEBUG:
 else:
     DATABASES = {
         'default': {
-            # Меняем настройку Django: теперь для работы будет использоваться
-            # бэкенд postgresql
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('POSTGRES_DB', 'django'),
             'USER': os.getenv('POSTGRES_USER', 'django'),
@@ -91,10 +81,6 @@ else:
             'PORT': os.getenv('DB_PORT', 5432)
         }
     }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -112,9 +98,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
@@ -125,8 +108,6 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'collected_static'
@@ -135,7 +116,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = '/media'
 
 
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -150,14 +131,28 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'SERIALIZERS': {
-        'user': 'api.serializers.CustomUserSerializer',
-        'current_user': 'api.serializers.CustomUserSerializer',
+        'user': 'api.serializers.UserSerializer',
     },
     'LOGIN_FIELD': 'email',
     'PERMISSIONS': {
         'current_user': ['rest_framework.permissions.IsAuthenticated'],
-        'user': ['rest_framework.permissions.AllowAny'],
+        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
         'user_list': ['rest_framework.permissions.AllowAny'],
-        'user_create': ['rest_framework.permissions.AllowAny'],
     }
 }
+
+EMAIL_FIELD_LENGTH = 254
+USERNAME_FIELD_LENGTH = 150
+FIRST_NAME_FIELD_LENGTH = 150
+LAST_NAME_FIELD_LENGTH = 150
+TAG_NAME_FIELD_LENGHT = 32
+TAG_SLUG_FIELD_LENGHT = 32
+INGREDIENT_NAME_FIELD_LENGTH = 128
+INGREDIENT_UNIT_FIELD_LENGTH = 64
+RECIPE_NAME_FIELD_LENGTH = 256
+MIN_COOKING_TIME_VALUE = 1
+MAX_COOKING_TIME_VALUE = 32767
+MIN_INGREDIENT_COUNT = 1
+MIN_INGREDIENT_AMOUNT = 1
+PAGINATION_SIZE = 6
+PAGE_SIZE_QUERY_PARAM_NAME = 'limit'
