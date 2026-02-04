@@ -9,7 +9,7 @@
 Проект состоит из четырех docker контейнеров: бэкенд, фронтенд, база данных, nginx
 
 Работающий проект можно исследовать [тут](https://foodgram2026.ddns.net)
-Документацию API можно посмотреть [тут](https://foodgram2026.ddns.net)
+Документацию API можно посмотреть [тут](https://foodgram2026.ddns.net/api/docs/)
 
 ### Основной функционал
 
@@ -68,7 +68,7 @@ sudo docker compose -f docker-compose.production.yml exec backend python manage.
 ```
 
 ### 5. Информация
-Документацию Api можно посмотреть по адресу http://127.0.0.1/api/docs
+Документацию Api можно посмотреть по адресу http://127.0.0.1/api/docs/
 
 ## Разработка
 
