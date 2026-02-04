@@ -1,9 +1,10 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer as DjoserUserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
+from recipes.constants import (MAX_COOKING_TIME_VALUE, MAX_INGREDIENT_AMOUNT,
+                               MIN_COOKING_TIME_VALUE, MIN_INGREDIENT_AMOUNT)
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
 from users.models import Subscription
@@ -53,18 +54,14 @@ class RecipeIngredientCreateSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all()
     )
-    amount = serializers.IntegerField()
+    amount = serializers.IntegerField(
+        min_value=MIN_INGREDIENT_AMOUNT,
+        max_value=MAX_INGREDIENT_AMOUNT
+    )
 
     class Meta:
         model = RecipeIngredient
         fields = ('id', 'amount')
-
-    def validate_amount(self, amount):
-        if amount < settings.MIN_INGREDIENT_AMOUNT:
-            raise serializers.ValidationError(
-                f'Количество должно быть >= {settings.MIN_INGREDIENT_AMOUNT}'
-            )
-        return amount
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
@@ -127,8 +124,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     )
     image = Base64ImageField(required=True)
     cooking_time = serializers.IntegerField(
-        min_value=settings.MIN_COOKING_TIME_VALUE,
-        max_value=settings.MAX_COOKING_TIME_VALUE)
+        min_value=MIN_COOKING_TIME_VALUE,
+        max_value=MAX_COOKING_TIME_VALUE)
 
     class Meta:
         model = Recipe
@@ -137,28 +134,28 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             'name', 'text', 'cooking_time'
         )
 
-    def validate_tags(self, value):
-        if not value:
+    def validate(self, attrs):
+        ingredients = attrs.get('ingredients')
+        if not ingredients:
+            raise serializers.ValidationError('Нужен хотя бы один ингредиент')
+        unique_ingredients = [ingredient['id']
+                              for ingredient in ingredients]
+        if len(unique_ingredients) != len(set(unique_ingredients)):
+            raise serializers.ValidationError(
+                'Ингредиенты не должны повторяться'
+            )
+        tags = attrs.get('tags')
+        if not tags:
             raise serializers.ValidationError('Нужен хотя бы один тег')
-        unique_tags = [tag.id for tag in value]
+        unique_tags = [tag.id for tag in tags]
         if len(unique_tags) != len(set(unique_tags)):
             raise serializers.ValidationError('Теги не должны повторяться')
-        return value
+        return super().validate(attrs)
 
     def validate_image(self, value):
         if value is None:
             raise serializers.ValidationError('Нужно изображение')
         return value
-
-    def validate_ingredients(self, ingredients):
-        if not ingredients:
-            raise serializers.ValidationError('Нужен хотя бы один ингредиент')
-        unique_ingredients = [ingredient['id'] for ingredient in ingredients]
-        if len(unique_ingredients) != len(set(unique_ingredients)):
-            raise serializers.ValidationError(
-                'Ингредиенты не должны повторяться'
-            )
-        return ingredients
 
     def create_ingredients(self, ingredients, recipe):
         recipe_ingredients = [
@@ -182,13 +179,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags', [])
         ingredients = validated_data.pop('ingredients', [])
-        self.validate_ingredients(ingredients)
-        self.validate_tags(tags)
-        instance = super().update(instance, validated_data)
         instance.tags.set(tags)
         instance.ingredients.clear()
         self.create_ingredients(ingredients, instance)
-        return instance
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         return RecipeSerializer(instance, context=self.context).data

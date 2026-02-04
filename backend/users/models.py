@@ -1,8 +1,10 @@
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
 from django.db import models
+
+from users.constants import (EMAIL_FIELD_LENGTH, FIRST_NAME_FIELD_LENGTH,
+                             LAST_NAME_FIELD_LENGTH, USERNAME_FIELD_LENGTH)
 
 
 class User(AbstractUser):
@@ -10,20 +12,20 @@ class User(AbstractUser):
 
     email = models.EmailField(
         verbose_name='Email',
-        max_length=settings.EMAIL_FIELD_LENGTH,
+        max_length=EMAIL_FIELD_LENGTH,
         unique=True,
     )
     first_name = models.CharField(
         verbose_name='Имя',
-        max_length=settings.FIRST_NAME_FIELD_LENGTH,
+        max_length=FIRST_NAME_FIELD_LENGTH,
     )
     last_name = models.CharField(
         verbose_name='Фамилия',
-        max_length=settings.LAST_NAME_FIELD_LENGTH,
+        max_length=LAST_NAME_FIELD_LENGTH,
     )
     username = models.CharField(
         verbose_name='Имя пользователя',
-        max_length=settings.USERNAME_FIELD_LENGTH,
+        max_length=USERNAME_FIELD_LENGTH,
         validators=[username_validator],
         unique=True,
     )

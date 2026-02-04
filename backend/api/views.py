@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import F, Sum
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views import View
@@ -225,5 +225,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 class ShortLinkRedirectView(View):
     def get(self, request, code):
-        get_object_or_404(Recipe, pk=code)
-        return redirect('/recipes/{recipe.id}/')
+        try:
+            recipe = Recipe.objects.get(pk=code)
+        except Recipe.DoesNotExist:
+            raise Http404('Короткая ссылка не найдена')
+
+        return redirect(f'/recipes/{recipe.id}/')
